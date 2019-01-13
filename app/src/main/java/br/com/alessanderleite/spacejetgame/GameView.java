@@ -100,7 +100,7 @@ public class GameView extends SurfaceView implements Runnable {
 
             case MotionEvent.ACTION_UP:
                 //stopping the boosting when screen is released
-                player.setBoosting();
+                player.stopBoosting();
                 break;
             case MotionEvent.ACTION_DOWN:
                 //boosting the space jet when screen is pressed
