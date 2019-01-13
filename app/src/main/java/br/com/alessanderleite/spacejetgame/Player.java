@@ -30,13 +30,19 @@ public class Player {
     private final int MAX_SPEED = 20;
 
     // constructor
-    public Player(Context context) {
+    public Player(Context context, int screenX, int screenY) {
         x = 75;
         y = 50;
         speed = 1;
 
         // Getting bitmap from drawable resource
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.player);
+
+        // calculating maxY
+        maxY = screenY - bitmap.getHeight();
+
+        // top edge's y point is 0 so min y will always ber zero
+        minY = 0;
 
         // setting the boosting value to false initially
         boosting = false;
