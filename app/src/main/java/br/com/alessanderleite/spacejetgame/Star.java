@@ -26,6 +26,32 @@ public class Star {
         y = generator.nextInt(maxY);
     }
 
+    public void update(int playerSpeed) {
+        // animating the star horizontally left side
+        // by decreasing x coordinate with player speed
+        x -= playerSpeed;
+        x -= speed;
+        // if the star reached the left edge of the screen
+        if (x < 0) {
+            // again starting the star from right edge
+            // this will give a infinite scrolling background effect
+            x = maxX;
+            Random generator = new Random();
+            y = generator.nextInt(maxY);
+            speed = generator.nextInt(15);
+        }
+    }
+
+    public float getStarWidth() {
+        // Making the star width random so that
+        // it will give a real look
+        float minX = 1.0f;
+        float maxX = 4.0f;
+        Random rand = new Random();
+        float finalX = rand.nextFloat() * (maxX - minX) + minX;
+        return finalX;
+    }
+
     public int getX() {
         return x;
     }
