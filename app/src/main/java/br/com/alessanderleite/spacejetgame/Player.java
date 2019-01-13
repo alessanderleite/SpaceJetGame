@@ -15,6 +15,20 @@ public class Player {
     // motion speed of the character
     private int speed = 0;
 
+    // boolean variable to track the ship is boosting or not
+    private boolean boosting;
+
+    // Gravity Value to add gravity effect on the ship
+    private final int GRAVITY = -10;
+
+    // Controlling Y coordinate so that ship won´t go outside the screen
+    private int maxY;
+    private int minY;
+
+    // Limit the bounds of the ship´s speed
+    private final int MIN_SPEED = 1;
+    private final int MAX_SPEED = 20;
+
     // constructor
     public Player(Context context) {
         x = 75;
@@ -23,18 +37,53 @@ public class Player {
 
         // Getting bitmap from drawable resource
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.player);
+
+        // setting the boosting value to false initially
+        boosting = false;
     }
 
-    // Method to update coordinate of character
+    // setting boosting true
+    public void setBoosting() {
+        boosting = true;
+    }
+
+    // setting boosting false
+    public void stopBoosting() {
+        boosting = false;
+    }
+
     public void update() {
-        // updating x coordinate
-        x++;
-    }
+        // if the ship is boosting
+        if (boosting) {
+            //speeding up the ship
+            speed += 2;
+        } else {
+            // slowing down if not boosting
+            speed -= 5;
+        }
 
-    /*
-    * These are getters you can generate it automatically
-    * right click on editor -> generate -> getters
-    * */
+        // controlling the top speed
+        if (speed > MAX_SPEED) {
+            speed = MAX_SPEED;
+        }
+
+        // if the speed is less than min speed
+        // controlling it so that it won't stop completely
+        if (speed < MIN_SPEED) {
+            speed = MIN_SPEED;
+        }
+
+        // moving the ship down
+        y -= speed + GRAVITY;
+
+        // but controlling it also so that it won't go off the screen
+        if (y < minY) {
+            y = minY;
+        }
+        if (y > maxY) {
+            y = maxY;
+        }
+    }
 
     public Bitmap getBitmap() {
         return bitmap;
