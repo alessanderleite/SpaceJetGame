@@ -3,20 +3,15 @@ package br.com.alessanderleite.spacejetgame;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 
 import java.util.Random;
 
 public class Enemy {
 
-    // bitmap for the enemy
-    // we have already pasted the bitmap in the drawable folder
     private Bitmap bitmap;
-
-    // x and y coordinates
     private int x;
     private int y;
-
-    // enemy speed
     private int speed = -1;
 
     // min and max coordinates to keep the enemy inside the screen
@@ -25,6 +20,9 @@ public class Enemy {
 
     private int maxY;
     private int minY;
+
+    // creating a rect object
+    private Rect detectCollision;
 
     public Enemy(Context context, int screenX, int screenY) {
         // getting bitmap from drawable resource
@@ -41,6 +39,9 @@ public class Enemy {
         speed = generator.nextInt(6) + 10;
         x = screenX;
         y = generator.nextInt(maxY) - bitmap.getHeight();
+
+        // initializing rect object
+        detectCollision = new Rect(x,y,bitmap.getWidth(), bitmap.getHeight());
     }
 
     public void update(int playerSpeed) {
@@ -55,6 +56,22 @@ public class Enemy {
             x = maxX;
             y = generator.nextInt(maxY) - bitmap.getHeight();
         }
+
+        // Adding the top, left, bottom and right to the rect object
+        detectCollision.left = x;
+        detectCollision.top = y;
+        detectCollision.right = x + bitmap.getWidth();
+        detectCollision.bottom = y + bitmap.getHeight();
+    }
+
+    // adding a setter to x coordinate so that we can change if after collision
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    // one more getter for getting the rect object
+    public Rect getDetectCollision() {
+        return detectCollision;
     }
 
     public Bitmap getBitmap() {
