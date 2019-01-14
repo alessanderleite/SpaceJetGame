@@ -43,4 +43,19 @@ public class Enemy {
         y = generator.nextInt(maxY) - bitmap.getHeight();
     }
 
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
 }
