@@ -43,6 +43,20 @@ public class Enemy {
         y = generator.nextInt(maxY) - bitmap.getHeight();
     }
 
+    public void update(int playerSpeed) {
+        // decreasing x coordinate so that enemy will move right to left
+        x -= playerSpeed;
+        x -= speed;
+        // if the enemy reaches the left edge
+        if (x < minX - bitmap.getWidth()) {
+            // adding the enemy again to the right edge
+            Random generator = new Random();
+            speed = generator.nextInt(10) + 10;
+            x = maxX;
+            y = generator.nextInt(maxY) - bitmap.getHeight();
+        }
+    }
+
     public Bitmap getBitmap() {
         return bitmap;
     }
