@@ -202,6 +202,14 @@ public class GameView extends SurfaceView implements Runnable {
                     paint
             );
 
+            // draw game Over when the game is over
+            if (isGameOver) {
+                paint.setTextSize(150);
+                paint.setTextAlign(Paint.Align.CENTER);
+
+                int yPos = (int)((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
+                canvas.drawText("Game Over", canvas.getWidth() / 2, yPos, paint);
+            }
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
