@@ -23,10 +23,10 @@ public class GameView extends SurfaceView implements Runnable {
     private SurfaceHolder surfaceHolder;
 
     // Adding enemies object array
-    private Enemy[] enemies;
+    private Enemy enemies;
 
-    // Adding 3 enemies you may increase the size
-    private int enemyCount = 3;
+    // created a reference of the class Friend
+    private Friend friend;
 
     // Adding an stars list
     private ArrayList<Star> stars = new ArrayList<Star>();
@@ -51,14 +51,14 @@ public class GameView extends SurfaceView implements Runnable {
             stars.add(s);
         }
 
-        // initializing enemy object array
-        enemies = new Enemy[enemyCount];
-        for (int i = 0; i < enemyCount; i++) {
-            enemies[i] = new Enemy(context, screenX, screenY);
-        }
+        // single enemy initialization
+        enemies = new Enemy(context, screenX, screenY);
 
         // initializing boom object
         boom = new Boom(context);
+
+        // initializing the Friend class object
+        friend = new Friend(context, screenX, screenY);
     }
 
     @Override
@@ -84,33 +84,30 @@ public class GameView extends SurfaceView implements Runnable {
             s.update(player.getSpeed());
         }
 
-        // updating the enemy coordinate with respect to player speed
-        for (int i = 0; i < enemyCount; i++) {
-            enemies[i].update(player.getSpeed());
+        enemies.update(player.getSpeed());
 
-            // if collision occurs with player
-            if (Rect.intersects(player.getDetectCollision(), enemies[i].getDetectCollision())) {
+        // if collision occurs with player
+        if (Rect.intersects(player.getDetectCollision(), enemies.getDetectCollision())) {
+            // displaying boom at that location
+            boom.setX(enemies.getX());
+            boom.setY(enemies.getY());
 
-                // displaying boom at that location
-                boom.setX(enemies[i].getX());
-                boom.setY(enemies[i].getY());
-
-                // moving enemy outside the left edge
-                enemies[i].setX(-200);
-            }
+            // moving enemy outside the left edge
+            enemies.setX(-200);
         }
+
+        // updating the friend ships coordinates
+        friend.update(player.getSpeed());
     }
 
     private void draw() {
         // checking if surface is valid
         if (surfaceHolder.getSurface().isValid()) {
-            // locking the canvas
             canvas = surfaceHolder.lockCanvas();
-            // drawing a background color for canvas
-            canvas.drawColor(Color.BLACK);
+            canvas.drawColor(Color.BLACK);// drawing a background color for canvas
 
-            // setting the paint color to white to draw the stars
-            paint.setColor(Color.WHITE);
+            paint.setColor(Color.WHITE);// setting the paint color to white to draw the stars
+            paint.setTextSize(20);
 
             // drawing all stars
             for (Star s : stars) {
@@ -123,23 +120,32 @@ public class GameView extends SurfaceView implements Runnable {
                     player.getBitmap(),
                     player.getX(),
                     player.getY(),
-                    paint);
+                    paint
+            );
 
             // drawing the enemies
-            for (int i = 0; i < enemyCount; i++) {
-                canvas.drawBitmap(
-                        enemies[i].getBitmap(),
-                        enemies[i].getX(),
-                        enemies[i].getY(),
-                        paint);
-            }
+            canvas.drawBitmap(
+                    enemies.getBitmap(),
+                    enemies.getX(),
+                    enemies.getY(),
+                    paint
+            );
 
             // drawing boom image
             canvas.drawBitmap(
                     boom.getBitmap(),
                     boom.getX(),
                     boom.getY(),
-                    paint);
+                    paint
+            );
+
+            // drawing friends image
+            canvas.drawBitmap(
+                    friend.getBitmap(),
+                    friend.getX(),
+                    friend.getY(),
+                    paint
+            );
 
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
