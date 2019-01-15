@@ -57,7 +57,7 @@ public class    Friend {
 
     // one more getter for getting the rect object
     public Rect getDetectCollision() {
-        return getDetectCollision();
+        return detectCollision;
     }
 
     // getters
