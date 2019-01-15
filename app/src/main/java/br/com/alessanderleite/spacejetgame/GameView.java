@@ -17,6 +17,18 @@ public class GameView extends SurfaceView implements Runnable {
     private Thread gameThread = null;
     private Player player;
 
+    // a screenX holder
+    int screenX;
+
+    // To count the number of Misses
+    int countMisses;
+
+    // indicator that the enemy has just entered the game screen
+    boolean flag;
+
+    // an indicator if the game is Over
+    private boolean isGameOver;
+
     // These objects will be used for drawing
     private Paint paint;
     private Canvas canvas;
@@ -59,6 +71,13 @@ public class GameView extends SurfaceView implements Runnable {
 
         // initializing the Friend class object
         friend = new Friend(context, screenX, screenY);
+
+        // setting the countMisses to 0 initially
+        countMisses = 0;
+
+        this.screenX = screenX;
+
+        isGameOver = false;
     }
 
     @Override
@@ -84,6 +103,11 @@ public class GameView extends SurfaceView implements Runnable {
             s.update(player.getSpeed());
         }
 
+        // setting the flag true when the enemy just enters the screen
+        if (enemies.getX() == screenX) {
+            flag = true;
+        }
+
         enemies.update(player.getSpeed());
 
         // if collision occurs with player
@@ -91,13 +115,44 @@ public class GameView extends SurfaceView implements Runnable {
             // displaying boom at that location
             boom.setX(enemies.getX());
             boom.setY(enemies.getY());
+            //will play a sound at the collision between player and the enemy
 
             // moving enemy outside the left edge
             enemies.setX(-200);
         }
+        else {
+            // if the enemy has just entered
+            if (flag) {
+                // if player's x coordinate is more than the enemies's x coordinate.i.e enemy has just pass across the player
+                if (player.getDetectCollision().exactCenterX() >= enemies.getDetectCollision().exactCenterX()) {
+                    // increment countMisses
+                    countMisses++;
+
+                    // setting the flag false so that the else part is executed only when new enemy enters the screen
+                    flag = false;
+                    // if no of Misses is equal to 3, then game is over.
+                    if (countMisses == 3) {
+                        // setting playing false to stop the game.
+                        playing = false;
+                        isGameOver = true;
+                    }
+                }
+            }
+        }
 
         // updating the friend ships coordinates
         friend.update(player.getSpeed());
+
+        // checking for a collision between player and a friend
+        if (Rect.intersects(player.getDetectCollision(), friend.getDetectCollision())) {
+
+            // displaying the boom at the collision
+            boom.setX(friend.getX());
+            boom.setY(friend.getY());
+
+            // setting the isGameOver true as the game is over
+            isGameOver = true;
+        }
     }
 
     private void draw() {
