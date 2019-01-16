@@ -1,6 +1,7 @@
 package br.com.alessanderleite.spacejetgame;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -19,6 +20,15 @@ public class GameView extends SurfaceView implements Runnable {
 
     // a screenX holder
     int screenX;
+
+    // the score holder
+    int score;
+
+    // the high Scores Holder
+    int highScore[] = new int[4];
+
+    // Shared Preferences to store the High Scores
+    SharedPreferences sharedPreferences;
 
     // To count the number of Misses
     int countMisses;
@@ -72,12 +82,23 @@ public class GameView extends SurfaceView implements Runnable {
         // initializing the Friend class object
         friend = new Friend(context, screenX, screenY);
 
+        // setting the score to ) initially
+        score = 0;
+
         // setting the countMisses to 0 initially
         countMisses = 0;
 
         this.screenX = screenX;
 
         isGameOver = false;
+
+        sharedPreferences = context.getSharedPreferences("SHAR_PREF_NAME", Context.MODE_PRIVATE);
+
+        // initializing the array high scorres with the previous values
+        highScore[0] = sharedPreferences.getInt("score1",0);
+        highScore[1] = sharedPreferences.getInt("score2",0);
+        highScore[2] = sharedPreferences.getInt("score3",0);
+        highScore[3] = sharedPreferences.getInt("score4",0);
     }
 
     @Override
@@ -91,6 +112,9 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
+        // incrementing score as time passes
+        score++;
+
         // updating player position
         player.update();
 
@@ -112,10 +136,12 @@ public class GameView extends SurfaceView implements Runnable {
 
         // if collision occurs with player
         if (Rect.intersects(player.getDetectCollision(), enemies.getDetectCollision())) {
+
             // displaying boom at that location
             boom.setX(enemies.getX());
             boom.setY(enemies.getY());
-            //will play a sound at the collision between player and the enemy
+
+            // playing a sound at the collision between player and the enemy
 
             // moving enemy outside the left edge
             enemies.setX(-200);
@@ -135,6 +161,24 @@ public class GameView extends SurfaceView implements Runnable {
                         // setting playing false to stop the game.
                         playing = false;
                         isGameOver = true;
+
+                        // Assigning the scores to the highscore integer array
+                        for (int i = 0; i < 4; i++) {
+                            if (highScore[i] < score) {
+
+                                final int finalI = i;
+                                highScore[i] = score;
+                                break;
+                            }
+                        }
+
+                        // storing the scores through shared Preferences
+                        SharedPreferences.Editor e = sharedPreferences.edit();
+                        for (int i = 0; i < 4; i++) {
+                            int j = i + 1;
+                            e.putInt("score" + j, highScore[i]);
+                        }
+                        e.apply();
                     }
                 }
             }
@@ -150,8 +194,29 @@ public class GameView extends SurfaceView implements Runnable {
             boom.setX(friend.getX());
             boom.setY(friend.getY());
 
+            // setting playing false to stop the game
+            playing = false;
+
             // setting the isGameOver true as the game is over
             isGameOver = true;
+
+            // Assigning the scores to the highscore integer array
+            for (int i = 0; i < 4; i++) {
+                if (highScore[i] < score) {
+
+                    final int finalI = i;
+                    highScore[i] = score;
+                    break;
+                }
+            }
+
+            // Storing the scores through shared Preferences
+            SharedPreferences.Editor e = sharedPreferences.edit();
+            for (int i = 0; i < 4; i++) {
+                int j = i + 1;
+                e.putInt("score" + j, highScore[i]);
+            }
+            e.apply();
         }
     }
 
@@ -169,6 +234,10 @@ public class GameView extends SurfaceView implements Runnable {
                 paint.setStrokeWidth(s.getStarWidth());
                 canvas.drawPoint(s.getX(), s.getY(), paint);
             }
+
+            // drawing the score on the game screen
+            paint.setTextSize(30);
+            canvas.drawText("Score: " + score, 100, 50, paint);
 
             // Drawing the player
             canvas.drawBitmap(
