@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -56,6 +57,11 @@ public class GameView extends SurfaceView implements Runnable {
     // defining a boom object to display blast
     private Boom boom;
 
+    //The mediaplayer objects to configure the background music
+    static MediaPlayer gameOnsound;
+    final MediaPlayer killedEnemysound;
+    final MediaPlayer gameOversound;
+
     public GameView(Context context, int screenX, int screenY) {
         super(context);
 
@@ -99,6 +105,14 @@ public class GameView extends SurfaceView implements Runnable {
         highScore[1] = sharedPreferences.getInt("score2",0);
         highScore[2] = sharedPreferences.getInt("score3",0);
         highScore[3] = sharedPreferences.getInt("score4",0);
+
+        //initializing the media players for the game sounds
+        gameOnsound = MediaPlayer.create(context, R.raw.gameon);
+        killedEnemysound = MediaPlayer.create(context, R.raw.killedenemy);
+        gameOversound = MediaPlayer.create(context, R.raw.gameover);
+
+        // starting the game music as the game starts
+        gameOnsound.start();
     }
 
     @Override
@@ -142,7 +156,7 @@ public class GameView extends SurfaceView implements Runnable {
             boom.setY(enemies.getY());
 
             // playing a sound at the collision between player and the enemy
-
+            killedEnemysound.start();
             // moving enemy outside the left edge
             enemies.setX(-200);
         }
@@ -161,6 +175,11 @@ public class GameView extends SurfaceView implements Runnable {
                         // setting playing false to stop the game.
                         playing = false;
                         isGameOver = true;
+
+                        // stopping the gameon music
+                        gameOnsound.stop();
+                        // play the game over sound
+                        gameOversound.start();
 
                         // Assigning the scores to the highscore integer array
                         for (int i = 0; i < 4; i++) {
@@ -199,6 +218,11 @@ public class GameView extends SurfaceView implements Runnable {
 
             // setting the isGameOver true as the game is over
             isGameOver = true;
+
+            // stopping the gameon music
+            gameOnsound.stop();;
+            // play the game over sound
+            gameOversound.start();
 
             // Assigning the scores to the highscore integer array
             for (int i = 0; i < 4; i++) {
@@ -309,6 +333,11 @@ public class GameView extends SurfaceView implements Runnable {
         playing = true;
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    // stop the music on exit
+    public static void stopMusic() {
+        gameOnsound.stop();
     }
 
     @Override
