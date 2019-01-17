@@ -1,6 +1,7 @@
 package br.com.alessanderleite.spacejetgame;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -21,6 +22,10 @@ public class GameView extends SurfaceView implements Runnable {
 
     // a screenX holder
     int screenX;
+
+    // context to be used in onTouchEvent to cause
+    // the activity transition from GameActivity to MainActivity
+    Context context;
 
     // the score holder
     int score;
@@ -71,6 +76,9 @@ public class GameView extends SurfaceView implements Runnable {
         // initializing drawing objects
         surfaceHolder = getHolder();
         paint = new Paint();
+
+        // initializing context
+        this.context = context;
 
         // adding 100 stars you may increase the number
         int starNums = 100;
@@ -351,6 +359,12 @@ public class GameView extends SurfaceView implements Runnable {
                 //boosting the space jet when screen is pressed
                 player.setBoosting();
                 break;
+        }
+        //if the game's over, tapping on game Over screen sends you to MainActivity
+        if (isGameOver) {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                context.startActivity(new Intent(context, MainActivity.class));
+            }
         }
         return true;
     }
